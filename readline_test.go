@@ -1,19 +1,19 @@
 // test program for the readline package
-package main
+package readline
 
-import "readline"
+import "fmt"
 
-func main() {
+func ExampleReadLine() {
 	prompt := "by your command> ";
 
 	//loop until ReadLine returns nil (signalling EOF)
 	L: for {
-		switch result := readline.ReadLine(&prompt); true {
+		switch result := ReadLine(&prompt); true {
 		case result == nil: break L //exit loop
 
 		case *result != "": //ignore blank lines
-			println(*result);
-			readline.AddHistory(*result); //allow user to recall this line
+			fmt.Println(*result);
+			AddHistory(*result); //allow user to recall this line
 		}
 	}
 }

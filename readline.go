@@ -6,8 +6,6 @@ package readline
 //  implement a go-oriented command completion
 
 /*
- #cgo darwin CFLAGS: -I/opt/local/include
- #cgo darwin LDFLAGS: -L/opt/local/lib
  #cgo LDFLAGS: -lreadline
 
  #include <stdio.h>
@@ -143,8 +141,11 @@ func CompletionMatches(text string, cbk func(text string, state int) string) []s
 }
 
 //
-func SetAttemptedCompletionFunction(cbk func(text string, start, end int) []string) {
-	c_cbk := (*C.rl_completion_func_t)(unsafe.Pointer(&cbk))
-	C.rl_attempted_completion_function = c_cbk
-}
+// Vanilla OSX has readline but not rl_completion_func_t (new interface)
+// Move this method in a OS depended module
+//
+//func SetAttemptedCompletionFunction(cbk func(text string, start, end int) []string) {
+//	c_cbk := (*C.rl_completion_func_t)(unsafe.Pointer(&cbk))
+//	C.rl_attempted_completion_function = c_cbk
+//}
 /* EOF */
