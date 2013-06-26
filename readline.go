@@ -141,11 +141,8 @@ func CompletionMatches(text string, cbk func(text string, state int) string) []s
 }
 
 //
-// Vanilla OSX has readline but not rl_completion_func_t (new interface)
-// Move this method in a OS depended module
-//
-//func SetAttemptedCompletionFunction(cbk func(text string, start, end int) []string) {
-//	c_cbk := (*C.rl_completion_func_t)(unsafe.Pointer(&cbk))
-//	C.rl_attempted_completion_function = c_cbk
-//}
+func SetAttemptedCompletionFunction(cbk func(text string, start, end int) []string) {
+	c_cbk := (*C.rl_completion_func_t)(unsafe.Pointer(&cbk))
+	C.rl_attempted_completion_function = c_cbk
+}
 /* EOF */
