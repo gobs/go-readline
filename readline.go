@@ -14,6 +14,10 @@ package readline
  #include "readline/readline.h"
  #include "readline/history.h"
 
+ #if !defined(RL_READLINE_VERSION) || (RL_READLINE_VERSION < 0x0600)
+ typedef char **rl_completion_func_t (const char *, int, int);
+ #endif
+
  char* _go_readline_strarray_at(char **strarray, int idx) 
  {
    return strarray[idx];
