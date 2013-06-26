@@ -2,6 +2,7 @@
 //
 // Vanilla OSX doesn't have rl_completion_func_t
 // +build !darwin
+// +build !windows
 
 package readline
 
