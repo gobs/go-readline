@@ -1,9 +1,7 @@
 // Wrapper around the GNU readline(3) library
+// +build !windows
 
 package readline
-
-// TODO:
-//  implement a go-oriented command completion
 
 /*
  #cgo LDFLAGS: -lreadline
