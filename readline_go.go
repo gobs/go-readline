@@ -21,6 +21,10 @@ func ReadLine(prompt *string) *string {
 	}
 
 	s := scanner.Text()
+	if s == "\x04" { // ^D
+		return nil
+	}
+
 	return &s
 }
 
