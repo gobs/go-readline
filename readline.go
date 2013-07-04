@@ -1,5 +1,6 @@
 // Wrapper around the GNU readline(3) library
-// +build !windows
+
+// +build linux darwin windows,libreadline
 
 package readline
 
@@ -16,24 +17,20 @@ package readline
  typedef char **rl_completion_func_t (const char *, int, int);
  #endif
 
- char* _go_readline_strarray_at(char **strarray, int idx) 
- {
-   return strarray[idx];
- }
+ extern void set_completion_entry_function();
+ extern void set_attempted_completion_function();
 
- int _go_readline_strarray_len(char **strarray)
- {
-   int sz = 0;
-   while (strarray[sz] != NULL) {
-     sz += 1;
-   }
-   return sz;
- }
+ extern char **cstring_array_new(int);
+ extern void cstring_array_set(char **, int, char*);
+
+ extern char *null_cstring();
+ extern char **null_cstring_array();
 */
 import "C"
 import "unsafe"
 import "syscall"
 
+// Read a line
 func ReadLine(prompt *string) *string {
 	var p *C.char
 
@@ -57,6 +54,7 @@ func ReadLine(prompt *string) *string {
 	return &s
 }
 
+// Add line to history
 func AddHistory(s string) {
 	p := C.CString(s)
 	defer C.free(unsafe.Pointer(p))
@@ -128,23 +126,59 @@ func GetCompleterDelims() string {
 	return delims
 }
 
-// 
-func CompletionMatches(text string, cbk func(text string, state int) string) []string {
-	c_text := C.CString(text)
-	defer C.free(unsafe.Pointer(c_text))
-	c_cbk := (*C.rl_compentry_func_t)(unsafe.Pointer(&cbk))
-	c_matches := C.rl_completion_matches(c_text, c_cbk)
-	n_matches := int(C._go_readline_strarray_len(c_matches))
-	matches := make([]string, n_matches)
-	for i := 0; i < n_matches; i++ {
-		matches[i] = C.GoString(C._go_readline_strarray_at(c_matches, C.int(i)))
+//////////////////////////////////////////////////////////////////////////////////
+
+// The signature for the rl_completion_entry_function callback
+type go_compentry_func_t func(text string, state int) string
+
+// The signature for the rl_attempted_completion_function callback
+type go_completion_func_t func(text string, start, end int) []string
+
+var _go_completion_entry_function go_compentry_func_t
+var _go_attempted_completion_function go_completion_func_t
+
+//export go_CompletionEntryFunction
+func go_CompletionEntryFunction(text *C.char, state int) *C.char {
+	if _go_completion_entry_function != nil {
+		ret := _go_completion_entry_function(C.GoString(text), state)
+		if len(ret) > 0 {
+			return C.CString(ret)
+		}
 	}
-	return matches
+
+	return C.null_cstring()
 }
 
-//
-func SetAttemptedCompletionFunction(cbk func(text string, start, end int) []string) {
-	c_cbk := (*C.rl_completion_func_t)(unsafe.Pointer(&cbk))
-	C.rl_attempted_completion_function = c_cbk
+//export go_AttemptedCompletionFunction
+func go_AttemptedCompletionFunction(text *C.char, start, end int) **C.char {
+	if _go_attempted_completion_function != nil {
+		ret := _go_attempted_completion_function(C.GoString(text), start, end)
+		if ret != nil {
+			size := len(ret)
+			c_ret := C.cstring_array_new(C.int(size + 1))
+
+			for i, s := range ret {
+				C.cstring_array_set(c_ret, C.int(i), C.CString(s))
+			}
+
+			C.cstring_array_set(c_ret, C.int(size), C.null_cstring())
+			return c_ret
+		}
+	}
+
+	return C.null_cstring_array()
 }
+
+// Set rl_completion_entry_function
+func SetCompletionEntryFunction(cbk go_compentry_func_t) {
+	_go_completion_entry_function = cbk
+	C.set_completion_entry_function()
+}
+
+// Set rl_attempted_completion_function
+func SetAttemptedCompletionFunction(cbk go_completion_func_t) {
+	_go_attempted_completion_function = cbk
+	C.set_attempted_completion_function()
+}
+
 /* EOF */
