@@ -45,10 +45,8 @@ func CompletionEntry(prefix string, index int) string {
 func main() {
 	prompt := "by your command> ";
 
-	// this crashes at times (at least on Windows)
 	//readline.SetAttemptedCompletionFunction(AttemptedCompletion)
 
-	// this seems to work more reliably
 	readline.SetCompletionEntryFunction(CompletionEntry)
 
 	// loop until ReadLine returns nil (signalling EOF)

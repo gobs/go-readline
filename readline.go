@@ -153,7 +153,7 @@ func go_CompletionEntryFunction(text *C.char, state int) *C.char {
 func go_AttemptedCompletionFunction(text *C.char, start, end int) **C.char {
 	if _go_attempted_completion_function != nil {
 		ret := _go_attempted_completion_function(C.GoString(text), start, end)
-		if ret != nil {
+		if ret != nil && len(ret) > 0 {
 			size := len(ret)
 			c_ret := C.cstring_array_new(C.int(size + 1))
 
