@@ -1,4 +1,4 @@
-// +build windows,libreadline
+// +build linux darwin libreadline
 
 #include <stdio.h>
 #include <stdlib.h>

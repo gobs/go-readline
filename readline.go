@@ -1,6 +1,6 @@
 // Wrapper around the GNU readline(3) library
 
-// +build linux darwin windows,libreadline
+// +build linux darwin libreadline
 
 package readline
 

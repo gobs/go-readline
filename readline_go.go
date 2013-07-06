@@ -3,7 +3,7 @@
 //
 //   build -tags libreadline
 
-// +build windows,!libreadline
+// +build !linux,!darwin,!libreadline
 
 package readline
 
