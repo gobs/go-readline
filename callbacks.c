@@ -6,12 +6,12 @@
 #include "readline/readline.h"
 #include "readline/history.h"
 
-#if !defined(RL_READLINE_VERSION) || (RL_READLINE_VERSION < 0x0600)
+#if !defined(RL_READLINE_VERSION) || (RL_READLINE_VERSION < 0x0500)
 typedef char **rl_completion_func_t (const char *, int, int);
 
 #define RL_COMPENTRY_FUNC_T Function
 #else
-#define RL_COMPENTRY_FUNC_T rl_compentry_fuc_t
+#define RL_COMPENTRY_FUNC_T rl_compentry_func_t
 #endif
 
 #include "_cgo_export.h"
