@@ -6,6 +6,7 @@ package readline
 
 /*
  #cgo LDFLAGS: -lreadline
+ #cgo linux LDFLAGS: -lncurses
 
  #include <stdio.h>
  #include <stdlib.h>
