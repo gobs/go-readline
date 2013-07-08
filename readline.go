@@ -13,10 +13,6 @@ package readline
  #include "readline/readline.h"
  #include "readline/history.h"
 
- #if !defined(RL_READLINE_VERSION) || (RL_READLINE_VERSION < 0x0600)
- typedef char **rl_completion_func_t (const char *, int, int);
- #endif
-
  extern void set_completion_entry_function();
  extern void set_attempted_completion_function();
 
