@@ -8,12 +8,16 @@
 
 #if !defined(RL_READLINE_VERSION) || (RL_READLINE_VERSION < 0x0600)
 typedef char **rl_completion_func_t (const char *, int, int);
+
+#define RL_COMPENTRY_FUNC_T Function
+#else
+#define RL_COMPENTRY_FUNC_T rl_compentry_fuc_t
 #endif
 
 #include "_cgo_export.h"
 
 void set_completion_entry_function() {
-	rl_completion_entry_function = (rl_compentry_func_t *)go_CompletionEntryFunction;
+	rl_completion_entry_function = (RL_COMPENTRY_FUNC_T *)go_CompletionEntryFunction;
 }
 
 void set_attempted_completion_function() {
