@@ -79,6 +79,11 @@ type go_compentry_func_t func(text string, state int) string
 // The signature for the rl_attempted_completion_function callback
 type go_completion_func_t func(text string, start, end int) []string
 
+// Call rl_completion_matches with the Go (compentry_function) callback
+func CompletionMatches(text string, cbk go_compentry_func_t) []string {
+	return nil
+}
+
 // Set rl_completion_entry_function
 func SetCompletionEntryFunction(cbk go_compentry_func_t) {
 }
