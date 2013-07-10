@@ -123,8 +123,13 @@ func SetCompleterDelims(break_chars string) {
 // Get the readline word delimiters for tab-completion
 func GetCompleterDelims() string {
 	cstr := C.rl_completer_word_break_characters
-	delims := C.GoString(cstr)
-	return delims
+	return C.GoString(cstr)
+}
+
+// Get the current readline buffer
+func GetLineBuffer() string {
+	cstr := C.rl_line_buffer
+	return C.GoString(cstr)
 }
 
 //////////////////////////////////////////////////////////////////////////////////

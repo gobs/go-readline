@@ -73,6 +73,11 @@ func GetCompleterDelims() string {
 	return ""
 }
 
+// Get the current readline buffer
+func GetLineBuffer() string {
+	return ""
+}
+
 // The signature for the rl_completion_entry_function callback
 type go_compentry_func_t func(text string, state int) string
 
