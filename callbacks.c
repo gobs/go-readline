@@ -16,6 +16,10 @@ typedef char **rl_completion_func_t (const char *, int, int);
 
 #include "_cgo_export.h"
 
+char ** call_completion_matches(const char *text) {
+    return rl_completion_matches(text, (rl_compentry_func_t *)go_CompletionEntryFunction);
+}
+
 void set_completion_entry_function() {
 	rl_completion_entry_function = (RL_COMPENTRY_FUNC_T *)go_CompletionEntryFunction;
 }
@@ -36,6 +40,23 @@ char **cstring_array_new(int size) {
 	return (char **) malloc(size * sizeof(char *));
 }
 
-void cstring_array_set(char **csa, int i, char *s) {
+void cstring_array_set(const char **csa, int i, const char *s) {
 	csa[i] = s;
+}
+
+const char *cstring_array_get(const char **csa, int i) {
+	return csa[i];
+}
+
+int cstring_array_len(const char **csa) {
+    int n = 0;
+
+    if (csa == (const char **)0)
+        return 0;
+
+    while (csa[n] != (char *)0) {
+        n++;
+    }
+
+    return n;
 }

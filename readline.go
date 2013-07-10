@@ -17,8 +17,12 @@ package readline
  extern void set_completion_entry_function();
  extern void set_attempted_completion_function();
 
+ extern char **call_completion_matches(const char *);
+
  extern char **cstring_array_new(int);
- extern void cstring_array_set(char **, int, char*);
+ extern void cstring_array_set(const char **, int, const char*);
+ extern const char *cstring_array_get(const char **, int);
+ extern int cstring_array_len(const char **);
 
  extern char *null_cstring();
  extern char **null_cstring_array();
@@ -164,6 +168,25 @@ func go_AttemptedCompletionFunction(text *C.char, start, end int) **C.char {
 	}
 
 	return C.null_cstring_array()
+}
+
+// Call rl_completion_matches with the Go (compentry_function) callback
+func CompletionMatches(text string, cbk go_compentry_func_t) []string {
+	temp_completion_entry_function := _go_completion_entry_function
+	_go_completion_entry_function = cbk
+
+	c_text := C.CString(text)
+	defer C.free(unsafe.Pointer(c_text))
+
+	c_matches := C.call_completion_matches(c_text)
+	n_matches := int(C.cstring_array_len(c_matches))
+	matches := make([]string, n_matches)
+	for i := 0; i < n_matches; i++ {
+		matches[i] = C.GoString(C.cstring_array_get(c_matches, C.int(i)))
+	}
+
+	_go_completion_entry_function = temp_completion_entry_function
+	return matches
 }
 
 // Set rl_completion_entry_function

@@ -3,27 +3,29 @@ package main
 
 import (
 	"fmt"
-	"strings"
 	"github.com/gobs/readline"
+	"strings"
 )
 
 var (
-	words = []string { "alpha", "beta", "charlie", "delta", "another", "banana", "carrot", "delimiter" }
+	words   = []string{"alpha", "beta", "charlie", "delta", "another", "banana", "carrot", "delimiter"}
 	matches = make([]string, 0, len(words))
 )
 
-func AttemptedCompletion(text string, start, end int) (result []string) {
-	result = make([]string, 0, len(words))
-
-	for _, w := range words {
-		if strings.HasPrefix(w, text) {
-			result = append(result, w)
-		}
+//
+// this will use CompletionEntry to match the "command" name (first word in the line
+//
+func AttemptedCompletion(text string, start, end int) []string {
+	if start == 0 { // this is the command to match
+		return readline.CompletionMatches(text, CompletionEntry)
+	} else {
+		return nil
 	}
-
-	return
 }
 
+//
+// this return a match in the "words" array
+//
 func CompletionEntry(prefix string, index int) string {
 	if index == 0 {
 		matches = matches[:0]
@@ -43,15 +45,12 @@ func CompletionEntry(prefix string, index int) string {
 }
 
 func main() {
-	prompt := "by your command> ";
-
-	//readline.SetAttemptedCompletionFunction(AttemptedCompletion)
-
-	readline.SetCompletionEntryFunction(CompletionEntry)
+	prompt := "by your command> "
 
 	// loop until ReadLine returns nil (signalling EOF)
-	L: for {
-		result := readline.ReadLine(&prompt);
+L:
+	for {
+		result := readline.ReadLine(&prompt)
 		if result == nil { // exit loop
 			break L
 		}
@@ -65,14 +64,26 @@ func main() {
 		case "exit", "quit":
 			break L
 
+		case "att", "attempted":
+			readline.SetAttemptedCompletionFunction(AttemptedCompletion)
+			readline.SetCompletionEntryFunction(nil)
+
+		case "compentry":
+			readline.SetCompletionEntryFunction(CompletionEntry)
+			readline.SetAttemptedCompletionFunction(nil)
+
+		case "nocomp", "nocompletion":
+			readline.SetCompletionEntryFunction(nil)
+			readline.SetAttemptedCompletionFunction(nil)
+
 		default:
 			if strings.HasPrefix(line, "prompt ") {
 				prompt = strings.TrimPrefix(line, "prompt ")
 			} else {
-				fmt.Println(line);
+				fmt.Println(line)
 			}
 
-			readline.AddHistory(line); //allow user to recall this line
+			readline.AddHistory(line) //allow user to recall this line
 		}
 	}
 }
