@@ -64,6 +64,13 @@ L:
 		case "exit", "quit":
 			break L
 
+		case "help":
+			fmt.Println("Available commands:")
+			fmt.Println("help exit attempted compentry nocompletion prompt")
+			fmt.Println()
+			fmt.Println("Try completion for these words:")
+			fmt.Println(words)
+
 		case "att", "attempted":
 			readline.SetAttemptedCompletionFunction(AttemptedCompletion)
 			readline.SetCompletionEntryFunction(nil)
