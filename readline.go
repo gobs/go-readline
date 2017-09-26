@@ -6,7 +6,7 @@ package readline
 
 /*
  #cgo LDFLAGS: -lreadline
- #cgo linux LDFLAGS: -lncurses
+ #cgo linux,ncurses LDFLAGS: -lncurses
 
  #include <stdio.h>
  #include <stdlib.h>
@@ -38,21 +38,17 @@ func ReadLine(prompt *string) *string {
 	//readline allows an empty prompt(NULL)
 	if prompt != nil {
 		p = C.CString(*prompt)
+		defer C.free(unsafe.Pointer(p))
 	}
 
-	ret := C.readline(p)
-
-	if p != nil {
-		C.free(unsafe.Pointer(p))
-	}
-
-	if ret == nil {
+	if ret := C.readline(p); ret == nil {
+		// EOF
 		return nil
-	} //EOF
-
-	s := C.GoString(ret)
-	C.free(unsafe.Pointer(ret))
-	return &s
+	} else {
+		s := C.GoString(ret)
+		C.free(unsafe.Pointer(ret))
+		return &s
+	}
 }
 
 // Add line to history
